@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritorio XP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tahoma', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(to bottom, #5a8bbe 0%, #3a6ea5 100%);
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        body.win98 {
+            background: #008080;
+            font-family: 'MS Sans Serif', 'Microsoft Sans Serif', sans-serif;
+        }
+
+        .desktop {
+            height: calc(100vh - 30px);
+            padding: 10px;
+            position: relative;
+        }
+
+        .desktop-icon {
+            width: 70px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.win98 .desktop-icon:hover {
+            background: none;
+            outline: 1px dotted #fff;
+        }
+
+        .icon-image {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 5px;
+            background: linear-gradient(135deg, #4a9eff 0%, #1e5fa8 100%);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        body.win98 .icon-image {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .icon-label {
+            color: white;
+            font-size: 11px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            word-wrap: break-word;
+        }
+
+        body.win98 .icon-label {
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.9);
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, #245edb 0%, #1941a5 50%, #1941a5 50%, #1434a1 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 2px;
+            box-shadow: 0 -1px 1px rgba(0,0,0,0.2);
+        }
+
+        body.win98 .taskbar {
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            box-shadow: inset 0 1px 0 #dfdfdf;
+        }
+
+        .start-button {
+            height: 26px;
+            padding: 0 12px;
+            background: linear-gradient(to bottom, #3bdb56 0%, #28a745 100%);
+            border: 1px solid #16641e;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        body.win98 .start-button {
+            background: #c0c0c0;
+            border: 2px outset #fff;
+            border-radius: 0;
+            color: #000;
+            box-shadow: none;
+        }
+
+        body.win98 .start-button:active {
+            border-style: inset;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to bottom, #4ee566 0%, #2fb84d 100%);
+        }
+
+        body.win98 .start-button:hover {
+            background: #c0c0c0;
+        }
+
+        .start-button:active {
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .start-icon {
+            font-size: 14px;
+        }
+
+        .clock {
+            height: 26px;
+            padding: 0 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        body.win98 .clock {
+            background: #c0c0c0;
+            border: 2px inset #fff;
+            border-radius: 0;
+            color: #000;
+        }
+
+        .start-menu {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 250px;
+            background: #fff;
+            border: 1px solid #0831d9;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 2px -2px 10px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        body.win98 .start-menu {
+            border: 2px outset #fff;
+            border-radius: 0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .start-menu.active {
+            display: block;
+        }
+
+        .start-menu-header {
+            background: linear-gradient(to right, #245edb 0%, #1941a5 100%);
+            padding: 25px 10px 5px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 4px 4px 0 0;
+        }
+
+        body.win98 .start-menu-header {
+            background: #000080;
+            border-radius: 0;
+            font-size: 12px;
+        }
+
+        .start-menu-items {
+            padding: 5px 0;
+        }
+
+        body.win98 .start-menu-items {
+            background: #c0c0c0;
+        }
+
+        .start-menu-item {
+            padding: 8px 35px 8px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .start-menu-item:hover {
+            background: linear-gradient(to right, #1e4fc2 0%, #3e78df 100%);
+            color: white;
+        }
+
+        body.win98 .start-menu-item:hover {
+            background: #000080;
+            color: #fff;
+        }
+
+        .start-menu-item-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #4a9eff 0%, #1e5fa8 100%);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        body.win98 .start-menu-item-icon {
+            border-radius: 0;
+        }
+
+        .window {
+            position: absolute;
+            background: #ece9d8;
+            border: 2px solid #0831d9;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+            min-width: 400px;
+            min-height: 200px;
+            display: none;
+        }
+
+        body.win98 .window {
+            background: #c0c0c0;
+            border: 2px outset #fff;
+            border-radius: 0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .window.active {
+            display: block;
+            z-index: 1000;
+        }
+
+        .window.minimized {
+            display: none;
+        }
+
+        .window-titlebar {
+            background: linear-gradient(to bottom, #3e8eea 0%, #1e5fa8 100%);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px 0 10px;
+            border-radius: 6px 6px 0 0;
+            cursor: move;
+            user-select: none;
+        }
+
+        body.win98 .window-titlebar {
+            background: #000080;
+            border-radius: 0;
+            height: 28px;
+        }
+
+        .window-title {
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        body.win98 .window-title {
+            font-size: 11px;
+        }
+
+        .window-title-icon {
+            width: 16px;
+            height: 16px;
+            background: #1e5fa8;
+            border-radius: 2px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        body.win98 .window-title-icon {
+            border-radius: 0;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .window-button {
+            width: 21px;
+            height: 21px;
+            background: linear-gradient(to bottom, #ebebe4 0%, #d8d6ca 100%);
+            border: 1px solid #fff;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        body.win98 .window-button {
+            background: #c0c0c0;
+            border: 2px outset #fff;
+            border-radius: 0;
+            width: 18px;
+            height: 18px;
+        }
+
+        body.win98 .window-button:active {
+            border-style: inset;
+        }
+
+        .window-button:hover {
+            background: linear-gradient(to bottom, #f5f5ef 0%, #e0ded2 100%);
+        }
+
+        body.win98 .window-button:hover {
+            background: #c0c0c0;
+        }
+
+        .window-button:active {
+            background: linear-gradient(to bottom, #d0cec2 0%, #b8b6aa 100%);
+        }
+
+        .window-button.close:hover {
+            background: linear-gradient(to right, #ff6b6b 0%, #ff4444 100%);
+            color: white;
+        }
+
+        body.win98 .window-button.close:hover {
+            background: #c0c0c0;
+            color: #000;
+        }
+
+        .window-content {
+            padding: 20px;
+            background: #fff;
+            height: calc(100% - 30px);
+            overflow: auto;
+        }
+
+        body.win98 .window-content {
+            background: #c0c0c0;
+        }
+
+        .about-content h2 {
+            color: #1e5fa8;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        body.win98 .about-content h2 {
+            color: #000;
+        }
+
+        .about-content p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        body.win98 .about-content p {
+            color: #000;
+        }
+
+        .about-content .version {
+            font-weight: bold;
+            color: #0831d9;
+        }
+
+        body.win98 .about-content .version {
+            color: #000;
+        }
+
+        .taskbar-window {
+            height: 26px;
+            padding: 0 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+            max-width: 180px;
+        }
+
+        body.win98 .taskbar-window {
+            background: #c0c0c0;
+            border: 2px outset #fff;
+            border-radius: 0;
+            color: #000;
+        }
+
+        body.win98 .taskbar-window.active-task {
+            border-style: inset;
+        }
+
+        .taskbar-window:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        body.win98 .taskbar-window:hover {
+            background: #c0c0c0;
+        }
+
+        .taskbar-window.active-task {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-selector {
+            padding: 15px;
+        }
+
+        .theme-option {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        body.win98 .theme-option {
+            background: #fff;
+            border: 2px outset #fff;
+            border-radius: 0;
+        }
+
+        .theme-option:hover {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+
+        body.win98 .theme-option:hover {
+            background: #fff;
+        }
+
+        .theme-option.active {
+            background: #d0e8ff;
+            border-color: #0831d9;
+            font-weight: bold;
+        }
+
+        body.win98 .theme-option.active {
+            background: #000080;
+            color: #fff;
+            border-style: inset;
+        }
+
+        .theme-option h3 {
+            margin-bottom: 5px;
+            color: #0831d9;
+        }
+
+        body.win98 .theme-option h3 {
+            color: #000;
+        }
+
+        body.win98 .theme-option.active h3 {
+            color: #fff;
+        }
+
+        .theme-option p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        body.win98 .theme-option p {
+            color: #000;
+        }
+
+        body.win98 .theme-option.active p {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <div class="desktop-icon" onclick="openWindow('about')">
+            <div class="icon-image">ℹ️</div>
+            <div class="icon-label">Acerca de</div>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('theme')">
+            <div class="icon-image">🎨</div>
+            <div class="icon-label">Temas</div>
+        </div>
+    </div>
+
+    <div class="taskbar">
+        <div class="start-button" onclick="toggleStartMenu()">
+            <span class="start-icon">🚀</span>
+            <span>Inicio</span>
+        </div>
+        <div id="taskbarWindows"></div>
+        <div class="clock" id="clock">00:00</div>
+    </div>
+
+    <div class="start-menu" id="startMenu">
+        <div class="start-menu-header">Sistema Operativo XP</div>
+        <div class="start-menu-items">
+            <div class="start-menu-item" onclick="openWindow('about'); toggleStartMenu();">
+                <div class="start-menu-item-icon">ℹ️</div>
+                <span>Acerca de</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('theme'); toggleStartMenu();">
+                <div class="start-menu-item-icon">🎨</div>
+                <span>Temas</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="aboutWindow">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'aboutWindow')">
+            <div class="window-title">
+                <div class="window-title-icon">ℹ️</div>
+                <span>Acerca de</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-button" onclick="minimizeWindow('aboutWindow')">_</div>
+                <div class="window-button close" onclick="closeWindow('aboutWindow')">✕</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="about-content">
+                <h2>Sistema Operativo XP Web</h2>
+                <p><span class="version">Versión:</span> 1.0.0</p>
+                <p><span class="version">Creador:</span> Asistente Claude</p>
+                <p>Este es un escritorio estilo Windows XP creado con HTML, CSS y JavaScript.</p>
+                <p>Funcionalidades actuales:</p>
+                <ul>
+                    <li>Ventanas arrastrables</li>
+                    <li>Minimizar y cerrar ventanas</li>
+                    <li>Menú de inicio</li>
+                    <li>Reloj en tiempo real</li>
+                    <li>Iconos de escritorio</li>
+                    <li>Cambio de temas (XP/98)</li>
+                </ul>
+                <p style="margin-top: 20px; color: #666; font-size: 12px;">
+                    El sistema está preparado para agregar más funcionalidades y programas en el futuro.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="window" id="themeWindow" style="min-width: 450px;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'themeWindow')">
+            <div class="window-title">
+                <div class="window-title-icon">🎨</div>
+                <span>Selector de Temas</span>
+            </div>
+            <div class="window-controls">
+                <div class="window-button" onclick="minimizeWindow('themeWindow')">_</div>
+                <div class="window-button close" onclick="closeWindow('themeWindow')">✕</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="theme-selector">
+                <h2 style="margin-bottom: 20px;">Selecciona un tema visual</h2>
+                
+                <div class="theme-option active" id="themeXP" onclick="changeTheme('xp')">
+                    <h3>🎨 Windows XP (Clásico)</h3>
+                    <p>El tema moderno con colores azules vibrantes y efectos de gradiente</p>
+                </div>
+                
+                <div class="theme-option" id="theme98" onclick="changeTheme('98')">
+                    <h3>💾 Windows 98 (Retro)</h3>
+                    <p>El tema clásico con estilo retro y colores grises característicos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de temas
+        let currentTheme = 'xp';
+
+        function changeTheme(theme) {
+            const body = document.body;
+            const themeXP = document.getElementById('themeXP');
+            const theme98 = document.getElementById('theme98');
+            
+            if (theme === '98') {
+                body.classList.add('win98');
+                theme98.classList.add('active');
+                themeXP.classList.remove('active');
+                currentTheme = '98';
+            } else {
+                body.classList.remove('win98');
+                themeXP.classList.add('active');
+                theme98.classList.remove('active');
+                currentTheme = 'xp';
+            }
+        }
+
+        // Reloj
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Menú de inicio
+        function toggleStartMenu() {
+            const menu = document.getElementById('startMenu');
+            menu.classList.toggle('active');
+        }
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('startMenu');
+            const startButton = document.querySelector('.start-button');
+            if (!menu.contains(e.target) && !startButton.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        // Sistema de ventanas
+        let draggedWindow = null;
+        let offsetX = 0;
+        let offsetY = 0;
+        let zIndexCounter = 1000;
+
+        function openWindow(windowId) {
+            const win = document.getElementById(windowId + 'Window');
+            win.classList.remove('minimized');
+            win.classList.add('active');
+            win.style.zIndex = ++zIndexCounter;
+            
+            // Centrar ventana si no tiene posición
+            if (!win.style.left) {
+                const rect = win.getBoundingClientRect();
+                win.style.left = (window.innerWidth - rect.width) / 2 + 'px';
+                win.style.top = (window.innerHeight - rect.height - 50) / 2 + 'px';
+            }
+            
+            updateTaskbar();
+        }
+
+        function closeWindow(windowId) {
+            document.getElementById(windowId).classList.remove('active');
+            updateTaskbar();
+        }
+
+        function minimizeWindow(windowId) {
+            document.getElementById(windowId).classList.add('minimized');
+            updateTaskbar();
+        }
+
+        function restoreWindow(windowId) {
+            const win = document.getElementById(windowId);
+            win.classList.remove('minimized');
+            win.style.zIndex = ++zIndexCounter;
+            updateTaskbar();
+        }
+
+        function updateTaskbar() {
+            const taskbarWindows = document.getElementById('taskbarWindows');
+            taskbarWindows.innerHTML = '';
+            
+            const windows = document.querySelectorAll('.window.active');
+            windows.forEach(win => {
+                const title = win.querySelector('.window-title span').textContent;
+                const isMinimized = win.classList.contains('minimized');
+                
+                const taskbarBtn = document.createElement('div');
+                taskbarBtn.className = 'taskbar-window' + (isMinimized ? '' : ' active-task');
+                taskbarBtn.textContent = title;
+                taskbarBtn.onclick = () => {
+                    if (isMinimized) {
+                        restoreWindow(win.id);
+                    } else {
+                        minimizeWindow(win.id);
+                    }
+                };
+                
+                taskbarWindows.appendChild(taskbarBtn);
+            });
+        }
+
+        // Arrastrar ventanas
+        function startDrag(e, windowId) {
+            draggedWindow = document.getElementById(windowId);
+            draggedWindow.style.zIndex = ++zIndexCounter;
+            
+            const rect = draggedWindow.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function drag(e) {
+            if (draggedWindow) {
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+                
+                // Limitar al área visible
+                newX = Math.max(0, Math.min(newX, window.innerWidth - draggedWindow.offsetWidth));
+                newY = Math.max(0, Math.min(newY, window.innerHeight - draggedWindow.offsetHeight - 30));
+                
+                draggedWindow.style.left = newX + 'px';
+                draggedWindow.style.top = newY + 'px';
+            }
+        }
+
+        function stopDrag() {
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            draggedWindow = null;
+        }
+    </script>
+</body>
+</html>
